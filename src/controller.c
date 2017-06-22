@@ -1,5 +1,5 @@
-#include "tetris_model.h"
-#include "tetris_view.h"
+#include "model.h"
+#include "view.h"
 #include <ncurses.h>
 #include <unistd.h>
 #include <stdio.h>

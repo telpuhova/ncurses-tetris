@@ -1,4 +1,4 @@
-#include "tetris_model.h"
+#include "model.h"
 #include <ncurses.h>
 #include <unistd.h>
 #include <stdio.h>
