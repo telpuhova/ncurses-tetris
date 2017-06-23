@@ -322,7 +322,7 @@ void erase_filled_lines(){
                 }
             }
             lines += 1;
-            if (lines == 3){ level += 1; lines = 0; }
+            if (lines == 10){ level += 1; lines = 0; }
         }
     }
 }
