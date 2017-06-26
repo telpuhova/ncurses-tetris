@@ -33,7 +33,8 @@ void game_end(){
 
 void draw(){
     clear();
-    mvprintw(5, 26, "lines = %i", lines);
+    mvprintw(3, 26, "lines = %i", lines);
+    mvprintw(5, 26, "score = %i", score);
     mvprintw(7, 26, "level = %i", level);
 
     get_data();

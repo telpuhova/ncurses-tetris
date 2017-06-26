@@ -11,37 +11,64 @@
 #define KX 2
 #define MK 7
 
+typedef enum
+{
+    LINE_CLEARED = 0,
+    BOARD_CLEARED,
+    FIGURE_DOWN
+} tetris_event;
+
 int game_field[21][12]; 
 int current_figure[4][2];
 int fig_num[2], rotation_flag;
 
 
 const uint8_t FIGURES[7][4][2] = {
-//    // line
+//   _______
+//  |_|_|_|_|
+//
     {
         {0, 0},{1, 0},{2, 0},{3, 0}
     },
-//    // cube
+//   ___
+//  |_|_|
+//  |_|_|
+//
     {
         {0, 0},{1, 0},{1, 1},{0, 1}
     },
-//    // turn to the right ---|
+//   _____
+//  |_|_|_|
+//      |_|
+//
     {
         {0, 0},{1, 0},{2, 0},{2, 1}
     },
-//    // turn to the left |--- 
+//   _____
+//  |_|_|_|
+//  |_|
+//
     {
         {0, 1},{1, 1},{2, 1},{2, 0}
     },
-//    // cube shifted to the right __--
+//     ___
+//   _|_|_|
+//  |_|_|
+//
     {
         {0, 0},{0, 1},{1, 1},{1, 2}
     },
-//    // cube shifted to the left --__
+//   ___
+//  |_|_|_
+//    |_|_|
+//
     {
         {0, 0},{1, 0},{1, 1},{2, 1}
     },
-//    // three to one
+//   _____
+//  |_|_|_|
+//    |_|
+//
     {
         {0, 0},{1, 0},{2, 0},{1, 1}
     }
@@ -50,7 +77,6 @@ const uint8_t FIGURES[7][4][2] = {
 
 void get_data(){
 
-    //int data[21][12];
     for (int i=0; i<21; i++){
         for (int j=0; j<12; j++){
             data[i][j] = game_field[i][j];
@@ -70,12 +96,9 @@ void get_data(){
     for (int i=0; i<4; i++){
         data[ FIGURES[fig_num[0]][i][1] + 9][ FIGURES[fig_num[0]][i][0] + 14] = fig_num[0] + 1;
     }
-
-    //return data;
 }
 
 void set_game_field(){
-
     //filling the gamefield with barriers
     for (int i=0; i<20; i++){
         for (int j=1; j<11; j++){
@@ -85,10 +108,22 @@ void set_game_field(){
     for (int j=1; j<11; j++){ game_field[20][j] = 7; }
     for (int i=0; i<21; i++){ game_field[i][0] = 7; game_field[i][11] = 7; }
 
-    // clearing the score
+   // clearing the score
     lines = 0;
     level = 0;
+    score = 0;
     fig_num[0] = rand()%7;
+}
+
+bool board_is_clear(){
+    for (int i=0; i<20; i++){
+        for (int j=1; j<11; j++){
+            if (game_field[i][j] != 0){
+                return false;
+            }
+        }
+    }
+    return true;    
 }
 
 bool game_on(){
@@ -99,7 +134,6 @@ bool game_on(){
 }
 
 void generate_figure(){
-    //generate figure
     fig_num[1] = fig_num[0]; 
     fig_num[0] = rand()%7; //rand number for a figure
     for (int i=0; i<4; i++){
@@ -134,8 +168,6 @@ bool collision_x_left(){
     return false;
 }
 
-//
-
 bool able_to_fall(){
     return !collision_y();
 }
@@ -150,7 +182,7 @@ bool able_to_move_right(){
 
 void move_down(){
     for (int k=0; k<4; k++){
-        current_figure[k][1]++; // MOVE DOWN
+        current_figure[k][1]++;
     }
 }
 
@@ -207,7 +239,6 @@ int minx(){
 //
 
 void rotate(){
-//void rotation(int * current_figure, int * game_field, int * rotation_flag, int fig_num){
     int collision_flag[4];
     for (int i=0; i<4; i++){
         collision_flag[i] = 0;
@@ -234,36 +265,27 @@ void rotate(){
     }
 
     for (int b = 0; b<4; b++){
-        //i = *(current_figure + b*MJ + 1);
         i = current_figure[b][1];
-        //j = *(current_figure + b*MJ + 0);
         j = current_figure[b][0];
 
         //small sqr
         if ((i == start_i) && (j == start_j)){
-            //*(current_figure + b*MJ + 0) += 1;
             current_figure[b][0] += 1;
         }
         if ((i == start_i) && (j == start_j + 1)){
-            //*(current_figure + b*MJ + 1) += 1;
             current_figure[b][1] += 1;
         }
         if ((i == start_i + 1) && (j == start_j + 1)){ 
-            //*(current_figure + b*MJ + 0) -= 1;
             current_figure[b][0] -= 1;
         }
         if ((i == start_i + 1) && (j == start_j)){
-            //*(current_figure + b*MJ + 1) -= 1;
             current_figure[b][1] -= 1;
         }
 
         //large sqr
         if (j == start_j+2){
-            //*(current_figure + b*MJ + 0) = start_j + start_i - i + 1;
             current_figure[b][0] = start_j + start_i - i + 1;
-            //*(current_figure + b*MJ + 1) = start_i + 2;
             current_figure[b][1] = start_i + 2;
-            //if (*(game_field + *(current_figure + b*MJ + 1)*MJ_GF + *(current_figure + b*MJ + 0)) != 0){ collision_flag[0] += 1; }
             if (game_field[current_figure[b][1]][current_figure[b][0]] != 0){ collision_flag[0] += 1; }
         }
         if (i == start_i+2){
@@ -300,15 +322,29 @@ void rotate(){
 }
 
 
-void figure_to_game_field(){
-    //figure to the gamefield
-    for (int i=0; i<4; i++){
-        game_field[current_figure[i][1]][current_figure[i][0]] = fig_num[1] + 1;
+void score_counter(tetris_event event){
+    switch (event){
+        case FIGURE_DOWN:
+            score += 10 * (level + 1);
+            break;
+        case LINE_CLEARED:
+            score += 50 * (level + 1);
+            break;
+        case BOARD_CLEARED:
+            score += 2000 * (level + 1);
+            break;
     }
 }
 
+void figure_to_game_field(){
+    for (int i=0; i<4; i++){
+        game_field[current_figure[i][1]][current_figure[i][0]] = fig_num[1] + 1;
+    }
+    score_counter(FIGURE_DOWN);
+}
+
 void erase_filled_lines(){
-    //erasing filled lines
+    int erased = 0;
     for (int line=0; line<20; line++){
         int f = 0;
         for (int row=1; row<11; row++){
@@ -322,8 +358,13 @@ void erase_filled_lines(){
                 }
             }
             lines += 1;
+            erased++;
+            score_counter(LINE_CLEARED);
             if (lines == 10){ level += 1; lines = 0; }
         }
+    }
+    if (board_is_clear() == true){
+        score_counter(BOARD_CLEARED);
     }
 }
 

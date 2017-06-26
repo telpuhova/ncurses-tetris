@@ -6,6 +6,7 @@
 int data[21][21];
 int lines;
 int level;
+int score;
 
 void get_data(void);
 
