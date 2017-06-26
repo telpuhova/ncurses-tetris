@@ -13,6 +13,7 @@
 
 void game_start(){
     initscr();
+    curs_set(0);
     if (has_colors()){
         start_color();
     }
@@ -54,7 +55,6 @@ void draw(){
             }
         }
     }
-
     refresh();
 }
 
