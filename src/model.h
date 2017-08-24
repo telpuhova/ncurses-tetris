@@ -1,5 +1,5 @@
-#ifndef TETRIS_MODEL_H
-#define TETRIS_MODEL_H
+#ifndef MODEL_H
+#define MODEL_H
 
 #include <ncurses.h>
 

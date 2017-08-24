@@ -1,5 +1,5 @@
-#ifndef TETRIS_VIEW_H
-#define TETRIS_VIEW_H
+#ifndef VIEW_H
+#define VIEW_H
 
 #include <ncurses.h>
 
